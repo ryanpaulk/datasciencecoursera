@@ -37,7 +37,10 @@ best <- function(state, outcome) {
 }
 result <- data.frame(st[, 2], dr) ## Hospital Name and min CoD
 result2 <- subset(result, result[,2] == TRUE)
-return(result2)
+##alphabetize
+alpha <- result2[order(result2$st...2.),] ## st...2. is the column name, don't know why it just is
+answer <- as.character(unlist(alpha[1,1])) ## What's in row 1, column 1
+return(answer)
 }
 ##alphabetize
 
