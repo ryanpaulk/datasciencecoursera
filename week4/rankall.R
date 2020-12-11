@@ -2,12 +2,8 @@ rankall <- function(outcome, num = "best") {
   ## Read outcome data
   excel <- read.csv("outcome-of-care-measures.csv", colClasses = "character")
   ## Check that state and outcome are valid
-  x = state %in% excel$State
   outcomes <- c("Heart Attack", "Heart Failure", "Pneumonia")
   y = outcome %in% excel$outcomes
-  if (x == FALSE) {
-    stop("Invalid State")
-  }
   if (y == FALSE) {
     stop("Invalid Outcome")
   }
@@ -26,8 +22,17 @@ rankall <- function(outcome, num = "best") {
   ## Include Hospital Name to Print later
   ## Treat COD as Numeric
   temp.df <- suppressWarnings(data.frame(excel$State, excel$Hospital.Name, as.numeric(death)))
-  ## For each state, find the hospital of the given rank
+  ## Make a For statement
+
+  ordered.st <- st[order(st[,3], st[,2]),]
   
+  dr <- c() ##empty vector
+  for (i in 1:length(st)) {
+    ##** I think rankhospital can be duplicated and then
+    ##** produce a different output
+  }
+  ## For each state, find the hospital of the given rank
+  ## For given outcome and rank, find the hospital and state
   ## Return a data frame with the hospital names and the
   ## (abbreviated) state name
 }
