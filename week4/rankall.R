@@ -26,12 +26,26 @@ rankall <- function(outcome, num = "best") {
 
   ordered.df <- temp.df[order(temp.df[,3], temp.df[,2], na.last = NA),] ##Omit the incomplete
   
-  dr <- c() ##empty vector
+  output <- vector() ##empty vector
+  states <- levels(excel$State) ## not sure why ##
+
   for (i in 1:length(ordered.df)) {
+    
+    hospital <- if (num == "best") {
+    ordered.df[1,2]
+  } else if (num == "worst") {
+    ordered.df[nrow(ordered.df), 2]
+  } else {
+    ordered.df[num, 2]
+  }
+  output <- append(output, c(hospital, states[i]))
     ##** I think rankhospital can be duplicated and then
     ##** produce a different output
   }
-  return(ordered.df)
+  output <- as.data.frame(matrix(output, length(states), 2, byrow = TRUE))
+  colnames(output) <- c("Hospital", "State")
+  rownames(output) <- states
+  output
   ## For each state, find the hospital of the given rank
   ## For given outcome and rank, find the hospital and state
   ## Return a data frame with the hospital names and the
