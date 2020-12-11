@@ -25,7 +25,7 @@ rankall <- function(outcome, num = "best") {
   ## Make Temporary Data Frame of State and CoD
   ## Include Hospital Name to Print later
   ## Treat COD as Numeric
-  suppressWarnings(temp.df <- data.frame(excel$State, excel$Hospital.Name, as.numeric(death)))
+  temp.df <- suppressWarnings(data.frame(excel$State, excel$Hospital.Name, as.numeric(death)))
   ## For each state, find the hospital of the given rank
   
   ## Return a data frame with the hospital names and the
