@@ -31,7 +31,12 @@ rankhospital <- function(state, outcome, num = "best") {
   ## Now lets organize 'st' by death from lowest(best) to highest(worst) and remove NA
   ## order() is default ASCENDING
   ordered.st <- st[order(st[,3], st[,2]),]
-  
-return(ordered.st)
+  if (num == "best") {
+    ordered.st[1,2]
+  } else if (num == "worst") {
+    ordered.st[nrow(ordered.st), 2]
+  } else {
+    ordered.st[num, 2]
+  }
 }
   ## 30-day death rate
