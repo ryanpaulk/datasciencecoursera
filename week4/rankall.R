@@ -24,7 +24,7 @@ rankall <- function(outcome, num = "best") {
   temp.df <- suppressWarnings(data.frame(excel$State, excel$Hospital.Name, as.numeric(death)))
   ## Make a For statement
 
-  ordered.df <- temp.df[order(temp.df[,3], temp.df[,2]),]
+  ordered.df <- temp.df[order(temp.df[,3], temp.df[,2], na.last = NA),] ##Omit the incomplete
   
   dr <- c() ##empty vector
   for (i in 1:length(ordered.df)) {
