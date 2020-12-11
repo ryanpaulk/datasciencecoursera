@@ -4,7 +4,7 @@ rankhospital <- function(state, outcome, num = "best") {
   ## Check that state and outcome are valid
   x = state %in% excel$State
   outcomes <- c("Heart Attack", "Heart Failure", "Pneumonia")
-  y = outcome %in% excel$outcomes
+  y = outcome %in% outcomes
   if (x == FALSE) {
     stop("Invalid State")
   }
@@ -27,5 +27,22 @@ rankhospital <- function(state, outcome, num = "best") {
   ## Treat COD as Numeric
   suppressWarnings(temp.df <- data.frame(excel$State, excel$Hospital.Name, as.numeric(death)))
   ## Return hospital name in that state with the given rank
-  ## 30-day death rate
+  st <- temp.df[excel$State == state,] ## create a subset of only that state
+  ## death rate organization
+  dr <- c()
+  for (i in 1:length(st)) {
+    dr <- st[i] == min((st[, 3]), na.rm = TRUE) ## 3 is column = death
+  }
+  result <- data.frame(st[, 2], dr) ## Hospital Name and min CoD
+  result2 <- subset(result, result[,2] == TRUE)
+  ##alphabetize
+  alpha <- result2[order(result2$st...2.),]
+  if (num == "best") {
+    alpha[1,2]
+  } else if (num == "worst") {
+    alpha[nrow(alpha), 2]
+  } else {
+    alpha[num, 2]
+  }
 }
+  ## 30-day death rate
