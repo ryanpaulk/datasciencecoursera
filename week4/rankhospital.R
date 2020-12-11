@@ -28,21 +28,10 @@ rankhospital <- function(state, outcome, num = "best") {
   suppressWarnings(temp.df <- data.frame(excel$State, excel$Hospital.Name, as.numeric(death)))
   ## Return hospital name in that state with the given rank
   st <- temp.df[excel$State == state,] ## create a subset of only that state
-  ## death rate organization
-  dr <- c()
-  for (i in 1:length(st)) {
-    dr <- st[i] == min((st[, 3]), na.rm = TRUE) ## 3 is column = death
-  }
-  result <- data.frame(st[, 2], dr) ## Hospital Name and min CoD
-  result2 <- subset(result, result[,2] == TRUE)
-  ##alphabetize
-  alpha <- result2[order(result2$st...2.),]
-  if (num == "best") {
-    alpha[1,2]
-  } else if (num == "worst") {
-    alpha[nrow(alpha), 2]
-  } else {
-    alpha[num, 2]
-  }
+  ## Now lets organize 'st' by death from lowest(best) to highest(worst) and remove NA
+  ## order() is default ASCENDING
+  ordered.st <- st[order(st[,3], st[,2]),]
+  
+return(ordered.st)
 }
   ## 30-day death rate
