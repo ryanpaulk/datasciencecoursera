@@ -1,4 +1,5 @@
 rankall <- function(outcome, num = "best") {
+  library(dplyr)
   ## Read outcome data
   excel <- read.csv("outcome-of-care-measures.csv", colClasses = "character")
   ## Check that state and outcome are valid
@@ -27,18 +28,19 @@ rankall <- function(outcome, num = "best") {
   ordered.df <- temp.df[order(temp.df[,3], temp.df[,2], na.last = NA),] ##Omit the incomplete
   
   output <- vector() ##empty vector
-  states <- levels(excel$State) ## not sure why ##
-
-  for (i in 1:length(ordered.df)) {
-    
+  states <- levels(as.factor(excel$State)) ## number of states should be 50, returns a vector list of states
+                                ## This returns "NULL" breaking everything next
+  for(i in 1:length(states)) {
+    statedata <- excel[grep(states[i], excel$State),]
+    rankdata <- statedata[order(statedata$death, statedata$Hospital.Name, na.last = NA), ]
     hospital <- if (num == "best") {
-    ordered.df[1,2]
+    rankdata[1,2]
   } else if (num == "worst") {
-    ordered.df[nrow(ordered.df), 2]
+    rankdata[nrow(rankdata), 2]
   } else {
-    ordered.df[num, 2]
+    rankdata[num, 2]
   }
-  output <- append(output, c(hospital, states[i]))
+    output <- append(output, c(hospital, states[i]))
     ##** I think rankhospital can be duplicated and then
     ##** produce a different output
   }
