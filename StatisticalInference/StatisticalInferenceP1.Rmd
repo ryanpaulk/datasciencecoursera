@@ -1,0 +1,83 @@
+---
+title: "Statistical Inference Project Part 1: Simulation Exercise"
+author: "Ryan P"
+date: "4/7/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+library(dplyr)
+library(data.table)
+library(ggplot2)
+```
+
+```{r}
+#1. Show the sample mean and compare it to the theoretical mean of the distribution.
+#2. Show how variable the sample is (via variance) and compare it to the theoretical variance of the distribution.
+#3. Show that the distribution is approximately normal.
+
+#The exponential distribution can be simulated in R with rexp(n, lambda)
+#mean of exponential distribution is 1/lambda and the standard deviation is also 1/lambda. Set lambda = 0.2
+#investigate the distribution of averages of 40 exponentials
+#a thousand simulations
+set.seed(4321)
+lam <- 0.2
+mu <- 1/lam
+stdev <- 1/lam
+n <- 40
+nsim <- 1000
+simdata <- matrix(rexp(n*nsim, rate = lam), nsim)
+simmeans <- rowMeans(simdata)
+hist(simmeans, main = "Frequency Distribution of Simulated Means", xlab = "Simulated Mean")
+```
+
+```{r}
+#Show the sample mean and compare it to the theoretical
+#Sample mean:
+smean <- mean(simmeans)
+smean
+#Theoretical mean of exponential distribution is defined as mu = 1/lambda
+#Theoretical mean:
+them <- 1/lam
+them
+```
+```{r}
+#Show how variable the sample is (via variance) and compare it to the theoretical variance of the distribution
+#Sample variance
+svar <- var(simmeans)
+svar
+#Theoretical variance
+#Theoretical variance of exponential dist = 1/(n*lambda^2) and 
+tvar <- 1/(n*lam^2)
+tvar
+#Standard deviations
+#Sample Std Dev
+sstd <- sd(simmeans)
+sstd
+#Theoretical Std Dev
+tstd <- 1/(lam*sqrt(n))
+tstd
+```
+```{r}
+#Show distribution is ~N
+samples <- data.frame(simmeans)
+g <- ggplot(samples, aes(x=simmeans))
+g <- g + geom_histogram(aes(y = ..density..), fill = "white", color = 17)
+g <- g + geom_vline(xintercept = smean, color = 3 )
+g <- g + geom_vline(xintercept = them, color = "red")
+g <- g + labs(x = "Sample Mean", y = "Density", title = "Density Distrubtion of Sample Means")
+g <- g + stat_function(fun = dnorm, args = list(mean = smean, sd = sstd), color= 3)
+g <- g + stat_function(fun = dnorm, args = list(mean = them, sd = tstd), color = "red")
+g 
+```
+
+```{r}
+#Confidence Intervals maybe?
+#Sample CI
+sCI <- smean + c(-1, 1)*1.96*sstd/sqrt(n)
+sCI
+#Theoretical CI
+tCI <- them + c(-1, 1)+1.96*tstd/sqrt(n)
+tCI
+```

@@ -1,0 +1,59 @@
+---
+title: 'Statistical Inference Project Part 2: Tooth Growth Analysis'
+author: "Ryan P"
+date: "4/8/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(data.table)
+library(ggplot2)
+library(datasets)
+tg <- ToothGrowth
+View(tg)
+summary(tg)
+str(tg)
+```
+```{r}
+#Visualisation of Tooth Length by Dosage Frequency
+g <- ggplot(aes(x=as.factor(dose), y=len), data = tg)
+g <- g + labs(x= "Dose Frequency", y = "Growth", title = "Tooth Growth by
+              Dosage Frequency")
+g <- g + geom_point(aes(color = supp))
+g
+```
+```{r}
+b <- ggplot(data = tg, aes(x = as.factor(dose), y = len, fill = supp))
+b <- b + geom_bar(stat = "identity")
+b <- b + facet_grid(.~supp)
+b <- b + labs (x= "Dose Frequency", y = "Growth") + guides(fill = guide_legend(
+  title = "Supplement"))
+b
+```
+Just from looking at the data visually, it appears there is little difference 
+between supplements on how much of an effect they have. ** Analyze this***
+
+The greatest effect on tooth length appears to be Dose Frequency
+and not whether or not the Dose is supplemented with either OJ or VC.
+
+Is there a significant difference between 1 dose per day and OJ and VC 
+administered supplements? *** How do I analyze this? ***
+
+There looks to be significantly increased growth within supplements with increased
+dose frequency*** Analyze this***
+Null Hypothesis One: Supplements have no effect on tooth growth.
+Alternate One: Supplements increase tooth growth
+```{r}
+
+
+Null Hypothesis TWO: There is no difference on tooth growth between supplements.
+Alternate Two: VC or OJ have different effects on tooth growth
+Alt 2a: At does 0.5 mg
+Alt 2b: At dosage 1.0 mg
+Alt 2c: At dosage 2.0 mg
+
+
+Null Hypothesis THREE: Dose Frequency has no effect on tooth growth
+Alternative THREE: Dose Frequency affects tooth growth
