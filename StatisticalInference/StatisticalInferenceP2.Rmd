@@ -148,10 +148,3 @@ optimal tooth growth.
 ```{r ref.label = "Supplement Doses", eval = FALSE}
 ```
 
-
-```{r}
-OJ <- tg$len[tg$supp == "OJ"]
-VC <- tg$len[tg$supp == "VC"]
-t.test(OJ, VC, paired = FALSE)$p.value
-
-```
