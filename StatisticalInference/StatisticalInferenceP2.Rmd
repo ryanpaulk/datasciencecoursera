@@ -97,7 +97,7 @@ the increased tooth growth may be related to increases in dose.
 
 
 # Hypothesis Three: One supplement's delivery method has a greater effect on tooth growth than the other
-# Null Hypothesis Two: There is no difference between supplements' effects on tooth growth
+# Null Hypothesis: There is no difference between supplements' effects on tooth growth
 
 ```{r Supplement Doses, echo = FALSE}
 # Supplement delivery method and doses defined
