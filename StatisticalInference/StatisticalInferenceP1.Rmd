@@ -1,6 +1,6 @@
 ---
 title: "Statistical Inference Project Part 1: Simulation Exercise"
-author: "Ryan P"
+author: "Ryan Paulk"
 date: "4/7/2021"
 output: pdf_document
 ---
@@ -11,13 +11,14 @@ library(dplyr)
 library(data.table)
 library(ggplot2)
 ```
+# Synopsis
 This project sought to compare the exponential distribution in R with the
 Central Limit Theorem and demonstrate their similarity. The exponential
 distribution was simulated forty times (n = 40) at a rate of lambda = 0.2.
 The mean of the exponential distribution is defined as 1/lambda and the 
 standard deviation also at 1/lambda. This simulation was repeated 1000
 times and graphed below.
-```{r}
+```{r fig.height = 2.5, fig.width = 4.5}
 # Set seed to make data replicable
 set.seed(4321) 
 #define parameters
@@ -29,22 +30,24 @@ nsim <- 1000
 # Generate data matrix of simulated means and graph
 simdata <- matrix(rexp(n*nsim, rate = lam), nsim)
 simmeans <- rowMeans(simdata)
-hist(simmeans, main = "Frequency Distribution of Simulated Means", xlab = "Simulated Mean")
+hist(simmeans, main = "Frequency Distribution of Simulated Means", xlab =
+       "Simulated Mean")
 ```
-It appears fairly normal centered about five.
-The sample mean was determined by taking the mean of the simulated means.
 
+The distribution appears to be Gaussian which is a tell-tale sign that 
+it is distributed Normally.
+
+The sample mean was identified by taking the mean of the simulated means.
 ```{r}
-#Show the sample mean and compare it to the theoretical
-#Sample mean:
+#calculate and store the sample mean of the simulated means
 smean <- mean(simmeans)
 smean
 ```
-Next the theoretical mean of the exponential distribution is defined as mu = 1/lambda.
+For comparison, the theoretical mean of the exponential distribution is defined
+as mu = 1/lambda.
 
 ```{r}
-#Theoretical mean of exponential distribution is defined as mu = 1/lambda
-#Theoretical mean:
+#calculate and store the theoretical mean
 them <- 1/lam
 them
 ```
@@ -52,63 +55,63 @@ And they appear to be very close.
 
 Next, variance for the simulation was calculated as the sample variance
 of the simulated means.
-
-
 ```{r}
-#Show how variable the sample is (via variance) and compare it to the theoretical variance of the distribution
 #Sample variance
 svar <- var(simmeans)
 svar
 ```
-And the theoretical variance was calculated with the sample size (n) factored in so
-that it was equal to 1/(n*lambda^2).
+And the theoretical variance was calculated with the sample size (n) factored
+in sothat it was equal to 1/(n*lambda^2).
 ```{r}
 #Theoretical variance
-#Theoretical variance of exponential dist = 1/(n*lambda^2) and 
 tvar <- 1/(n*lam^2)
 tvar
 ```
 Sample standard deviations were then calculated.
 ```{r}
-
-#Standard deviations
-#Sample Std Dev
+#Sample standard deviation
 sstd <- sd(simmeans)
 sstd
 ```
-Again, taking into account the sample size when calculating the theoretical
+Again, taking into account the sample size when calculating the theoretical 
 standard deviation.
 ```{r}
-#Theoretical Std Dev
+#Theoretical standard deviation
 tstd <- 1/(lam*sqrt(n))
 tstd
+```
+Furthermore, a comparison of 95% confidence intervals shows little deviation 
+from the theoretical distribution.
+```{r}
+#Sample CI
+sCI <- smean + c(-1, 1)*1.96*sstd/sqrt(n)
+sCI
+#Theoretical CI
+tCI <- them + c(-1, 1)*1.96*tstd/sqrt(n)
+tCI
 ```
 All of the sample's attributes appear to be close to those of the theoretical 
 distribution.
 
-
 To show that the sample of the exponential distribution is normal, the data was
 plotted and fitted with both the sample's curve and the theoretical curve. The
 means were then marked with vertical lines that overlapped.
-```{r}
+```{r fig.height = 2.5, fig.width = 4.5}
 #Show distribution is ~N
 samples <- data.frame(simmeans)
 g <- ggplot(samples, aes(x=simmeans))
 g <- g + geom_histogram(aes(y = ..density..), fill = "white", color = 17)
 g <- g + geom_vline(xintercept = smean, color = 3 )
 g <- g + geom_vline(xintercept = them, color = "red")
-g <- g + labs(x = "Sample Mean", y = "Density", title = "Density Distrubtion of Sample Means")
-g <- g + stat_function(fun = dnorm, args = list(mean = smean, sd = sstd), color= 3)
-g <- g + stat_function(fun = dnorm, args = list(mean = them, sd = tstd), color = "red")
+g <- g + labs(x = "Sample Mean", y = "Density", title = "Density Distrubtion of
+              Sample Means")
+g <- g + stat_function(fun = dnorm, args = list(mean = smean, sd = sstd), 
+                       color= 3)
+g <- g + stat_function(fun = dnorm, args = list(mean = them, sd = tstd), 
+                       color = "red")
 g 
 ```
 
-```{r}
-#Confidence Intervals maybe?
-#Sample CI
-sCI <- smean + c(-1, 1)*1.96*sstd/sqrt(n)
-sCI
-#Theoretical CI
-tCI <- them + c(-1, 1)+1.96*tstd/sqrt(n)
-tCI
-```
+# Conclusion
+Based on the simulation's distribution's similarity to the theoretical 
+distribution it can be said to behave as predicted by the Central Limit Theorem.

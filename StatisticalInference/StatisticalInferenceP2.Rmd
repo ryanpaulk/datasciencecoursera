@@ -1,14 +1,25 @@
 ---
 title: 'Statistical Inference Project Part 2: Tooth Growth Analysis'
-author: "Ryan P"
+author: "Ryan Paulk"
 date: "4/8/2021"
 output: pdf_document
 ---
-The tooth growth data set is the resulting data set of an modified diet for
-guinea pigs and the resultant tooth growth. The two independent variables are the
+# Synopsis
+
+The tooth growth data set is the resulting data collected for guinea pigs on a
+modified diet and the resultant tooth growth. The two independent variables are the
 dosage of Vitamin C (0.5, 1, and 2 mg) and the delivery supplement (orange juice,
 "OJ", and ascorbic acid, "VC".) It is a small data set and can be preliminarily
 explored with the View() function.
+
+# Key Assumptions of the Data
+1. Data is independent and identically distributed
+2. Variances are considered to be unequal
+3. Data is representative of the population
+4. The t-distribution can correct for and normalize the small data set
+
+# Data Exploration
+(See Appendix for code)
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
@@ -20,51 +31,76 @@ View(tg)
 summary(tg)
 str(tg)
 ```
-Possible trends and effects can be better realized through graphs.
-```{r}
-#Visualisation of Tooth Length by Dosage Frequency
+Two graphs were produced to explore possible relationships.
+
+```{r Tooth Growth Graph, fig.width = 5, fig.height = 3, echo = FALSE}
+#Visualisation of Tooth Length by Dosage
 g <- ggplot(aes(x=as.factor(dose), y=len), data = tg)
-g <- g + labs(x= "Dose Frequency", y = "Growth", title = "Tooth Growth by
-              Dosage Frequency")
+g <- g + labs(x= "Dose", y = "Growth", title = "Tooth Growth by
+              Dosage")
 g <- g + geom_point(aes(color = supp))
 g
 ```
-Visually, the data shows there might be significant differences between OJ and 
-ascorbic acid at lower doses, but none at higher.
-```{r}
+
+In the first graph, the effects of the two supplements appear to become less 
+distinct with increased dose.
+
+```{r Dosage Graph, fig.width = 5, fig.height = 3, echo = FALSE}
+#Visualisation of Tooth Growth by Supplement
 b <- ggplot(data = tg, aes(x = as.factor(dose), y = len, fill = supp))
 b <- b + geom_bar(stat = "identity")
 b <- b + facet_grid(.~supp)
-b <- b + labs (x= "Dose Frequency", y = "Growth") + guides(fill = guide_legend(
+b <- b + labs (x= "Dose", y = "Growth") + guides(fill = guide_legend(
   title = "Supplement"))
 b
 ```
-Here, just from looking at the bar graphs, it seems apparent that increased
-dosages for both OJ and ascorbic acid increase tooth growth.
 
-Just from looking at the data visually, it appears there is little difference 
-between supplements on how much of an effect they have. ** Analyze this***
+From the second graph, there is an apparent trend of increased tooth growth
+with increased vitamin C dose, no matter which supplement is used.
+It is still not clear if one supplement is distinctly better.
 
-The greatest effect on tooth length appears to be Dose Frequency
-and not whether or not the Dose is supplemented with either OJ or VC.
+# Statistical Analysis
 
-Is there a significant difference between 1 dose per day and OJ and VC 
-administered supplements? *** How do I analyze this? ***
+Three hypotheses will be investigated using t.tests and the resulting p-values
+will be discussed.
 
-There looks to be significantly increased growth within supplements with increased
-dose frequency*** Analyze this***
-Null Hypothesis One: Supplements have no effect on tooth growth.
-Alternate One: Supplements increase tooth growth
-# There is no data for no supplement so this hypothesis can not be tested.
-```{r}
-### Variances are all assumed to be unequal, var.equal = FALSE
+# Hypothesis One: Supplements have different effects on tooth growth
+# Null Hypothesis: There is no significant difference between Supplements
+
+```{r Supplements, echo = FALSE}
+OJ <- tg$len[tg$supp == "OJ"]
+VC <- tg$len[tg$supp == "VC"]
 ```
-Null Hypothesis TWO: There is no difference on tooth growth between supplements.
-Alternate Two: VC or OJ have different effects on tooth growth
-Alt 2a: At does 0.5 mg
-Alt 2b: At dosage 1.0 mg
-Alt 2c: At dosage 2.0 mg
 ```{r}
+t.test(OJ, VC, paired = FALSE)$p.value
+
+```
+The null hypothesis fails to be rejected and indicates that there is no 
+difference between supplements on tooth growth.
+
+# Hypothesis Two: Size of dose has an effect on tooth growth
+# Null Hypothesis: Size of dose has no effect on tooth growth
+```{r Doses, echo = FALSE}
+dose.5 <- tg$len[tg$dose == 0.5]
+dose1 <- tg$len[tg$dose == 1]
+dose2 <- tg$len[tg$dose == 2]
+#Default confidence interval is 0.95
+```
+```{r}
+t.test(dose.5, dose1, alternative = "less", paired = FALSE)$p.value
+```
+```{r}
+t.test(dose1, dose2, alternative = "less", paired = FALSE)$p.value
+```
+The p-values returned allow us to reject the null hypothesis and conclude that 
+the increased tooth growth may be related to increases in dose.
+
+
+# Hypothesis Three: One supplement's delivery method has a greater effect on tooth growth than the other
+# Null Hypothesis Two: There is no difference between supplements' effects on tooth growth
+
+```{r Supplement Doses, echo = FALSE}
+# Supplement delivery method and doses defined
 oj.5 <- tg$len[tg$dose == 0.5 & tg$supp == "OJ"]
 oj1 <- tg$len[tg$dose == 1 & tg$supp == "OJ"]
 oj2 <- tg$len[tg$dose == 2 & tg$supp == "OJ"]
@@ -72,37 +108,50 @@ vc.5 <- tg$len[tg$dose == 0.5 & tg$supp == "VC"]
 vc1 <- tg$len[tg$dose == 1 & tg$supp == "VC"]
 vc2 <- tg$len[tg$dose == 2 & tg$supp == "VC"]
 ```
-With these defined, we can test between supplements at different dosages.
+First, the smallest doses were compared.
 ```{r}
-t.test(oj.5, vc.5, alternative = "greater", paired = FALSE)
+t.test(oj.5, vc.5, alternative = "greater", paired = FALSE)$p.value
 ```
-The significance of this result indicates that OJ has a greater effect on 
-tooth growth than ascorbic acid.
+The p-value from this one-sided t-test indicates that OJ has a greater effect
+on tooth growth than ascorbic acid at the lowest dose.
 
 ```{r}
-t.test(oj1, vc1, alternative = "greater", paired = FALSE)
+t.test(oj1, vc1, alternative = "greater", paired = FALSE)$p.value
 ```
-This again indicates that OJ has a greater effect on tooth growth than ascorbic
-acid.
-```{r}
-t.test(oj2, vc2, paired = FALSE)
-```
-At higher doses there is no significant difference between the supplements'
-effects on tooth growth.
+Again, the same t-test with medium doses shows OJ having a stronger effect.
 
-#Null Hypothesis THREE: Dose Frequency has no effect on tooth growth
-#Alternative THREE: Dose Frequency affects tooth growth
 ```{r}
-dose.5 <- tg$len[tg$dose == 0.5]
-dose1 <- tg$len[tg$dose == 1]
-dose2 <- tg$len[tg$dose == 2]
-#Default confidence interval is 0.95
+t.test(oj2, vc2, paired = FALSE)$p.value
 ```
+Finally, at the highest dose and in agreement to what was seen in the graphs,
+there is no significant difference between supplements at the highest dose.
+
+# Conclusion
+
+From the data we can conclude that it does not matter which delivery method or 
+supplement is used so long as higher vitamin C doses are  made available for 
+optimal tooth growth.
+
+\pagebreak
+
+# Appendix
+```{r ref.label = "setup", eval = FALSE}
+```
+```{r ref.label = "Tooth Growth Graph", eval = FALSE}
+```
+```{r ref.label = "Dosage Graph", eval = FALSE}
+```
+```{r ref.label = "Supplements", eval = FALSE}
+```
+```{r ref.label = "Doses", eval = FALSE}
+```
+```{r ref.label = "Supplement Doses", eval = FALSE}
+```
+
+
 ```{r}
-t.test(dose.5, dose1, alternative = "less", paired = FALSE)
+OJ <- tg$len[tg$supp == "OJ"]
+VC <- tg$len[tg$supp == "VC"]
+t.test(OJ, VC, paired = FALSE)$p.value
+
 ```
-```{r}
-t.test(dose1, dose2, alternative = "less", paired = FALSE)
-```
-These tests show that there is a significant increase in tooth growth with 
-increased dosages.
